@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kärlekens fem språk - vilket är ditt kärleksspråk?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background: linear-gradient(135deg, #e0f7fa 0%, #f1f8e9 100%);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            text-align: center;
+			leading: 1.2
+        }
+        h1 span {
+            opacity: 0.4;
+        }
+        .intro-text {
+            margin-bottom: 20px;
+            position: relative;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px 20px 20px 20px;
+            background-color: #fff;
+        }
+        .intro-text.hidden {
+            display: none;
+        }
+        .initial-text {
+            margin-bottom: 20px;
+            display: none;
+        }
+        #questions-container {
+            display: none;
+        }
+        #questions-container.active {
+            display: block;
+        }
+        .quest-item {
+            margin-bottom: 20px;
+            position: relative;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #fff;
+        }
+		.indicator {
+            position: absolute;
+            top: -30px;
+            left: 40px;
+            background-color: #007e8f;
+            font-family: Montserrat, sans-serif;
+            font-size: 14px;
+            color: #fff;
+            line-height: 35px;
+            border-radius: 25px;
+            padding: 0 15px;
+            z-index: 100;
+        }
+        .question-text {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .radio-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .radio-item input[type="radio"] {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            margin: 0;
+            cursor: pointer;
+        }
+        .radio-item label {
+            cursor: pointer;
+        }
+        .quiz-nav {
+            display: none;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .quiz-nav.active {
+            display: flex;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007e8f;
+            color: white;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #005f6b;
+        }
+        #results {
+            display: none;
+        }
+        #results.active {
+            display: block;
+			margin-bottom: 20px;
+            position: relative;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kärlekens fem språk <span>– vilket är ditt kärleksspråk?</span></h1>
+        <div class="intro-text">
+            <p>
+                Kärlekens fem språk är ett koncept som utvecklades av Gary Chapman. Det beskriver hur människor uttrycker och tar emot kärlek på olika sätt.
+                De fem språken är:
+            </p>
+            <ul>
+                <li><strong>Uppmuntrande ord:</strong> Att säga uppskattande eller kärleksfulla ord.</li>
+                <li><strong>Kvalitetstid:</strong> Att ge odelad uppmärksamhet och spendera tid tillsammans.</li>
+                <li><strong>Gåvor:</strong> Att ge symboliska gåvor som uttrycker omtanke.</li>
+                <li><strong>Tjänster:</strong> Att göra något praktiskt för att underlätta för den andra.</li>
+                <li><strong>Fysisk beröring:</strong> Att använda kramar, kyssar eller andra beröringar för att visa kärlek.</li>
+            </ul>
+            <p>
+                Genom att förstå dessa kärleksspråk kan du förbättra dina relationer och kommunicera din kärlek på ett sätt som är meningsfullt för din partner.
+            </p>
+            <button class="btn start" id="start-test">Påbörja testet</button>
+        </div>
+        <p class="initial-text">Detta test innehåller frågor som hjälper dig att reflektera över din relation. Svara ärligt för att få den mest relevanta feedbacken. Välj det svar som passar in bäst på dig. När du är färdig tryck på "Nästa fråga" för att fortsätta.</p>
+        <div id="questions-container"></div>
+        <nav class="quiz-nav">
+            <button class="btn prev" disabled>Föregående fråga</button>
+            <button class="btn next">Nästa fråga</button>
+        </nav>
+        <div id="results">
+            <h2>Ditt resultat</h2>
+            <p id="results-text"></p>
+        </div>
+    </div>
+
+    <script>
+        const questionsData = [
+		{
+			question: "Vad får dig att känna dig mest uppskattad?",
+			options: [
+				{ text: "Uppmuntrande ord", value: "words", weight: 5 },
+				{ text: "Kvalitetstid", value: "time", weight: 5 },
+				{ text: "Genomtänkta gåvor", value: "gifts", weight: 5 },
+				{ text: "Hjälp med vardagliga sysslor", value: "service", weight: 5 },
+				{ text: "Fysisk beröring", value: "touch", weight: 5 }
+			]
+		},
+		{
+			question: "Vad betyder mest för dig på en speciell dag?",
+			options: [
+				{ text: "Ett hjärtligt 'jag älskar dig'", value: "words", weight: 5 },
+				{ text: "Att spendera tid tillsammans", value: "time", weight: 5 },
+				{ text: "En gåva som visar att de tänker på mig", value: "gifts", weight: 5 },
+				{ text: "Att de tar hand om något jag behövde hjälp med", value: "service", weight: 5 },
+				{ text: "En varm kram", value: "touch", weight: 5 }
+			]
+		},
+		{
+			question: "Hur ofta känner du att din partner prioriterar tid med dig?",
+			options: [
+				{ text: "Alltid", value: "time", weight: 5 },
+				{ text: "Ofta", value: "time", weight: 4 },
+				{ text: "Ibland", value: "time", weight: 3 },
+				{ text: "Sällan", value: "time", weight: 2 },
+				{ text: "Aldrig", value: "time", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta planerar ni tillsammans för veckan?",
+			options: [
+				{ text: "Varje vecka", value: "service", weight: 5 },
+				{ text: "Ofta", value: "service", weight: 4 },
+				{ text: "Ibland", value: "service", weight: 3 },
+				{ text: "Sällan", value: "service", weight: 2 },
+				{ text: "Aldrig", value: "service", weight: 1 }
+			]
+		},
+		{
+			question: "Hur viktigt är fysisk närhet för dig i relationen?",
+			options: [
+				{ text: "Mycket viktig", value: "touch", weight: 5 },
+				{ text: "Viktig", value: "touch", weight: 4 },
+				{ text: "Neutral", value: "touch", weight: 3 },
+				{ text: "Mindre viktig", value: "touch", weight: 2 },
+				{ text: "Inte viktig", value: "touch", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta följer ni upp veckan tillsammans?",
+			options: [
+				{ text: "Varje vecka", value: "service", weight: 5 },
+				{ text: "Ofta", value: "service", weight: 4 },
+				{ text: "Ibland", value: "service", weight: 3 },
+				{ text: "Sällan", value: "service", weight: 2 },
+				{ text: "Aldrig", value: "service", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta visar du uppskattning för din partner?",
+			options: [
+				{ text: "Alltid", value: "words", weight: 5 },
+				{ text: "Ofta", value: "words", weight: 4 },
+				{ text: "Ibland", value: "words", weight: 3 },
+				{ text: "Sällan", value: "words", weight: 2 },
+				{ text: "Aldrig", value: "words", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta har ni tid för varandra utan distraktioner?",
+			options: [
+				{ text: "Varje dag", value: "time", weight: 5 },
+				{ text: "Flera gånger i veckan", value: "time", weight: 4 },
+				{ text: "En gång i veckan", value: "time", weight: 3 },
+				{ text: "Sällan", value: "time", weight: 2 },
+				{ text: "Aldrig", value: "time", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta diskuterar ni era gemensamma mål?",
+			options: [
+				{ text: "Alltid", value: "words", weight: 5 },
+				{ text: "Ofta", value: "words", weight: 4 },
+				{ text: "Ibland", value: "words", weight: 3 },
+				{ text: "Sällan", value: "words", weight: 2 },
+				{ text: "Aldrig", value: "words", weight: 1 }
+			]
+		},
+		{
+			question: "Hur viktigt är det för dig att planera saker tillsammans?",
+			options: [
+				{ text: "Mycket viktigt", value: "service", weight: 5 },
+				{ text: "Viktigt", value: "service", weight: 4 },
+				{ text: "Neutral", value: "service", weight: 3 },
+				{ text: "Mindre viktigt", value: "service", weight: 2 },
+				{ text: "Inte viktigt", value: "service", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta deltar ni i aktiviteter som stärker er relation?",
+			options: [
+				{ text: "Alltid", value: "time", weight: 5 },
+				{ text: "Ofta", value: "time", weight: 4 },
+				{ text: "Ibland", value: "time", weight: 3 },
+				{ text: "Sällan", value: "time", weight: 2 },
+				{ text: "Aldrig", value: "time", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta visar ni uppskattning för varandras arbete i vardagen?",
+			options: [
+				{ text: "Alltid", value: "words", weight: 5 },
+				{ text: "Ofta", value: "words", weight: 4 },
+				{ text: "Ibland", value: "words", weight: 3 },
+				{ text: "Sällan", value: "words", weight: 2 },
+				{ text: "Aldrig", value: "words", weight: 1 }
+			]
+		},
+		{
+			question: "Hur viktigt är det för dig att dela framtida drömmar med din partner?",
+			options: [
+				{ text: "Mycket viktigt", value: "words", weight: 5 },
+				{ text: "Viktigt", value: "words", weight: 4 },
+				{ text: "Neutral", value: "words", weight: 3 },
+				{ text: "Mindre viktigt", value: "words", weight: 2 },
+				{ text: "Inte viktigt", value: "words", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta skrattar ni tillsammans?",
+			options: [
+				{ text: "Dagligen", value: "time", weight: 5 },
+				{ text: "Flera gånger i veckan", value: "time", weight: 4 },
+				{ text: "Ibland", value: "time", weight: 3 },
+				{ text: "Sällan", value: "time", weight: 2 },
+				{ text: "Aldrig", value: "time", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta visar ni ömhet offentligt?",
+			options: [
+				{ text: "Alltid", value: "touch", weight: 5 },
+				{ text: "Ofta", value: "touch", weight: 4 },
+				{ text: "Ibland", value: "touch", weight: 3 },
+				{ text: "Sällan", value: "touch", weight: 2 },
+				{ text: "Aldrig", value: "touch", weight: 1 }
+			]
+		},
+		{
+			question: "Hur mycket anstränger ni er för att lösa konflikter på ett konstruktivt sätt?",
+			options: [
+				{ text: "Alltid", value: "words", weight: 5 },
+				{ text: "Ofta", value: "words", weight: 4 },
+				{ text: "Ibland", value: "words", weight: 3 },
+				{ text: "Sällan", value: "words", weight: 2 },
+				{ text: "Aldrig", value: "words", weight: 1 }
+			]
+		},
+		{
+			question: "Hur viktigt är det för dig att känna att din partner stöttar dig känslomässigt?",
+			options: [
+				{ text: "Mycket viktigt", value: "words", weight: 5 },
+				{ text: "Viktigt", value: "words", weight: 4 },
+				{ text: "Neutral", value: "words", weight: 3 },
+				{ text: "Mindre viktigt", value: "words", weight: 2 },
+				{ text: "Inte viktigt", value: "words", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta diskuterar ni era olika behov och förväntningar?",
+			options: [
+				{ text: "Alltid", value: "words", weight: 5 },
+				{ text: "Ofta", value: "words", weight: 4 },
+				{ text: "Ibland", value: "words", weight: 3 },
+				{ text: "Sällan", value: "words", weight: 2 },
+				{ text: "Aldrig", value: "words", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta tar ni tid för att fira varandras framgångar?",
+			options: [
+				{ text: "Alltid", value: "words", weight: 5 },
+				{ text: "Ofta", value: "words", weight: 4 },
+				{ text: "Ibland", value: "words", weight: 3 },
+				{ text: "Sällan", value: "words", weight: 2 },
+				{ text: "Aldrig", value: "words", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta diskuterar ni hur ni kan förbättra er relation?",
+			options: [
+				{ text: "Alltid", value: "words", weight: 5 },
+				{ text: "Ofta", value: "words", weight: 4 },
+				{ text: "Ibland", value: "words", weight: 3 },
+				{ text: "Sällan", value: "words", weight: 2 },
+				{ text: "Aldrig", value: "words", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta är du nöjd med kvaliteten på tid ni spenderar tillsammans?",
+			options: [
+				{ text: "Alltid", value: "time", weight: 5 },
+				{ text: "Ofta", value: "time", weight: 4 },
+				{ text: "Ibland", value: "time", weight: 3 },
+				{ text: "Sällan", value: "time", weight: 2 },
+				{ text: "Aldrig", value: "time", weight: 1 }
+			]
+		},
+		{
+			question: "Hur ofta tycker du att din partner uppskattar dina handlingar?",
+			options: [
+				{ text: "Alltid", value: "service", weight: 5 },
+				 { text: "Ofta", value: "service", weight: 4 },
+							{ text: "Ibland", value: "service", weight: 3 },
+							{ text: "Sällan", value: "service", weight: 2 },
+							{ text: "Aldrig", value: "service", weight: 1 }
+						]
+					},
+					{
+						question: "Hur ofta upplever du fysisk närhet från din partner?",
+						options: [
+							{ text: "Dagligen", value: "touch", weight: 5 },
+							{ text: "Flera gånger i veckan", value: "touch", weight: 4 },
+							{ text: "En gång i veckan", value: "touch", weight: 3 },
+							{ text: "Sällan", value: "touch", weight: 2 },
+							{ text: "Aldrig", value: "touch", weight: 1 }
+						]
+					}
+		];
+
+        let currentQuestionIndex = 0;
+        const scores = { words: 0, time: 0, gifts: 0, service: 0, touch: 0 };
+		const loveLanguagesDescriptions = {
+			words: {
+				title: "Uppmuntrande ord",
+				description: `
+					Uppmuntrande ord handlar om att uttrycka sin kärlek genom att säga positiva och stödjande saker. 
+					Människor med detta kärleksspråk känner sig mest älskade när de hör komplimanger, vänliga ord och bekräftelser.
+					Behovet kan vara att höra ett enkelt "jag älskar dig" eller att få erkännande för sina prestationer.
+				`
+			},
+			time: {
+				title: "Kvalitetstid",
+				description: `
+					Kvalitetstid innebär att ge odelad uppmärksamhet till sin partner. För dessa personer är det viktigast att känna sig prioriterade och att få dela stunder tillsammans.
+					Det kan vara att ha djupa samtal, gå på en promenad tillsammans eller bara njuta av varandras sällskap utan distraktioner.
+				`
+			},
+			gifts: {
+				title: "Gåvor",
+				description: `
+					Gåvor är inte bara materiella föremål utan symboler för kärlek och omtanke. För personer med detta kärleksspråk är det tanken bakom gåvan som betyder mest.
+					En oväntad present, en lapp med fina ord, eller något som visar att du har tänkt på dem kan betyda världen.
+				`
+			},
+			service: {
+				title: "Tjänster",
+				description: `
+					Tjänster handlar om att visa kärlek genom handlingar. Detta kan vara att laga mat, städa, eller hjälpa till med vardagliga uppgifter.
+					För dessa personer betyder handlingar ofta mer än ord – det är ett sätt att visa att man bryr sig och vill underlätta för sin partner.
+				`
+			},
+			touch: {
+				title: "Fysisk beröring",
+				description: `
+					Fysisk beröring är ett kraftfullt sätt att uttrycka kärlek. En person med detta kärleksspråk känner sig mest älskad genom kramar, kyssar, handhållning eller en kärleksfull klapp på axeln.
+					Det handlar om att skapa en känslomässig koppling genom fysisk närhet.
+				`
+			}
+		};
+        const userAnswers = {};
+
+        const introText = document.querySelector('.intro-text');
+        const initialText = document.querySelector('.initial-text');
+        const questionsContainer = document.getElementById('questions-container');
+        const quizNav = document.querySelector('.quiz-nav');
+        const prevButton = document.querySelector('.prev');
+        const nextButton = document.querySelector('.next');
+        const resultsDiv = document.getElementById('results');
+        const resultsText = document.getElementById('results-text');
+        const startButton = document.getElementById('start-test');
+
+        function renderQuestion(index) {
+            const questionData = questionsData[index];
+            questionsContainer.innerHTML = `
+                <div class="quest-item active">
+                    <p class="indicator">Fråga ${index + 1} / ${questionsData.length}</p>
+                    <p class="question-text">${questionData.question}</p>
+                    <div class="radio-items">
+                        ${questionData.options.map((option, i) => `
+                            <div class="radio-item">
+                                <input type="radio" name="q${index}" id="q${index}-${i}" value="${option.value}" data-weight="${option.weight}">
+                                <label for="q${index}-${i}">${option.text}</label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function calculateResults() {
+            Object.keys(scores).forEach(key => scores[key] = 0);
+            Object.values(userAnswers).forEach(({ value, weight }) => {
+                scores[value] += weight;
+            });
+
+            const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+            return sortedScores;
+        }
+
+       
+		
+		
+		function showResults() {
+			const sortedScores = calculateResults();
+			const topLanguageKey = sortedScores[0][0];
+			const topLanguage = loveLanguagesDescriptions[topLanguageKey];
+
+			resultsDiv.classList.add('active');
+			resultsText.innerHTML = `
+				<h3>Ditt kärleksspråk är: ${topLanguage.title}</h3>
+				<p>${topLanguage.description}</p>
+				<p>Här är dina poäng för alla kärleksspråk:</p>
+				<ul>
+					${sortedScores.map(([key, score]) => `
+						<li><strong>${loveLanguagesDescriptions[key].title}:</strong> ${score} poäng</li>
+					`).join('')}
+				</ul>
+			`;
+		}
+		
+		
+		
+		
+		
+		
+
+        startButton.addEventListener('click', () => {
+            introText.classList.add('hidden');
+            initialText.classList.remove('hidden');
+            quizNav.classList.add('active');
+            questionsContainer.classList.add('active');
+            renderQuestion(currentQuestionIndex);
+        });
+
+        nextButton.addEventListener('click', () => {
+            const selected = questionsContainer.querySelector('input[type="radio"]:checked');
+            if (!selected) {
+                alert('Vänligen välj ett alternativ innan du går vidare.');
+                return;
+            }
+
+            const questionKey = `q${currentQuestionIndex}`;
+            const value = selected.value;
+            const weight = parseInt(selected.dataset.weight, 10);
+            userAnswers[questionKey] = { value, weight };
+
+            if (currentQuestionIndex < questionsData.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion(currentQuestionIndex);
+                prevButton.disabled = false;
+                if (currentQuestionIndex === questionsData.length - 1) {
+                    nextButton.textContent = 'Visa resultat';
+                }
+            } else {
+                questionsContainer.classList.remove('active');
+                quizNav.classList.remove('active');
+                showResults();
+            }
+        });
+
+        prevButton.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion(currentQuestionIndex);
+                nextButton.textContent = 'Nästa fråga';
+                if (currentQuestionIndex === 0) {
+                    prevButton.disabled = true;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
