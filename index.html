@@ -535,7 +535,11 @@
 			}
 		};
         const userAnswers = {};
-
+	    
+	const modalOverlay = document.getElementById('modal-overlay');
+	const openModal = document.getElementById('open-modal');
+        const closeModal = document.getElementById('close-modal');
+        const progressBar = document.getElementById('progress-bar');
         const introText = document.querySelector('.intro-text');
         const initialText = document.querySelector('.initial-text');
         const questionsContainer = document.getElementById('questions-container');
@@ -545,6 +549,14 @@
         const resultsDiv = document.getElementById('results');
         const resultsText = document.getElementById('results-text');
         const startButton = document.getElementById('start-test');
+
+	openModal.addEventListener('click', function () {
+            modalOverlay.style.display = 'flex';
+        });
+
+        closeModal.addEventListener('click', function () {
+            modalOverlay.style.display = 'none';
+        });
 
         function renderQuestion(index) {
             const questionData = questionsData[index];
