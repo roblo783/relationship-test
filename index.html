@@ -51,7 +51,7 @@
             padding: 20px;
             background-color: #fff;
         }
-		.indicator {
+	.indicator {
             position: absolute;
             top: -30px;
             left: 40px;
@@ -120,13 +120,7 @@
             padding: 20px;
             background-color: #fff;
         }
-	/* Modal Styles */
-        .read-more {
-            color: #0056b3;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
+ 	/* Modal Styles */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -134,13 +128,11 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            display: none; /* Initially hidden */
         }
-
         .modal {
             background: white;
             border-radius: 12px;
@@ -148,14 +140,12 @@
             max-width: 500px;
             width: 90%;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
             position: relative;
+            text-align: center;
         }
-
         .modal h2 {
             margin-top: 0;
         }
-
         .modal-close {
             position: absolute;
             top: 10px;
@@ -166,7 +156,6 @@
             cursor: pointer;
             color: #666;
         }
-
         .modal-close:hover {
             color: #000;
         }
@@ -559,21 +548,23 @@
         const resultsText = document.getElementById('results-text');
         const startButton = document.getElementById('start-test');
 
-	openModal.addEventListener('click', function (event) {
-            event.preventDefault();
+	// Open Modal
+        openModal.addEventListener('click', function () {
             modalOverlay.style.display = 'flex';
         });
 
+        // Close Modal
         closeModal.addEventListener('click', function () {
             modalOverlay.style.display = 'none';
         });
 
-        window.addEventListener('click', function (event) {
-            if (event.target === modalOverlay) {
+        // Close Modal when clicking outside
+        window.addEventListener('click', function (e) {
+            if (e.target === modalOverlay) {
                 modalOverlay.style.display = 'none';
             }
         });
-
+	    
         function renderQuestion(index) {
             const questionData = questionsData[index];
             questionsContainer.innerHTML = `
