@@ -121,6 +121,12 @@
             background-color: #fff;
         }
 	/* Modal Styles */
+        .read-more {
+            color: #0056b3;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -132,8 +138,9 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            display: none;
+            display: none; /* Initially hidden */
         }
+
         .modal {
             background: white;
             border-radius: 12px;
@@ -144,9 +151,11 @@
             text-align: center;
             position: relative;
         }
+
         .modal h2 {
             margin-top: 0;
         }
+
         .modal-close {
             position: absolute;
             top: 10px;
@@ -157,6 +166,7 @@
             cursor: pointer;
             color: #666;
         }
+
         .modal-close:hover {
             color: #000;
         }
@@ -180,9 +190,9 @@
             <p><a href="#mer-info" class="read-more">Läs mer om Kärlekens fem språk »</a></p>
             <button class="btn start" id="start-test">Påbörja testet</button>
         </div>
-	<div id="mer-info" style="display: none;">
 	<div class="modal-overlay" id="modal-overlay">
         <div class="modal">
+            <button class="modal-close" id="close-modal">&times;</button>
 	    <h2>Varför är detta värdefullt?</h2>
 	    <p>Många relationer drabbas av konflikter eller otillfredsställelse när vi inte förstår hur vår partner uttrycker kärlek eller när vi själva inte känner oss älskade. Om du uttrycker din kärlek på ett sätt som inte matchar din partners kärleksspråk kan det leda till missförstånd. På samma sätt kan du missa din partners kärleksuttryck om du inte är uppmärksam på hens kärleksspråk.</p>
 	
@@ -245,7 +255,6 @@
 	    </ol>
 	
 	    <p>Genom att förstå och tala din partners kärleksspråk visar du att du verkligen ser och uppskattar dem. Detta kan skapa en djupare känsla av intimitet och trygghet i relationen.</p>
-	</div>
 	</div>
 	</div>
         <p class="initial-text">Detta test innehåller frågor som hjälper dig att reflektera över din relation. Svara ärligt för att få den mest relevanta feedbacken. Välj det svar som passar in bäst på dig. När du är färdig tryck på "Nästa fråga" för att fortsätta.</p>
@@ -550,12 +559,19 @@
         const resultsText = document.getElementById('results-text');
         const startButton = document.getElementById('start-test');
 
-	openModal.addEventListener('click', function () {
+	openModal.addEventListener('click', function (event) {
+            event.preventDefault();
             modalOverlay.style.display = 'flex';
         });
 
         closeModal.addEventListener('click', function () {
             modalOverlay.style.display = 'none';
+        });
+
+        window.addEventListener('click', function (event) {
+            if (event.target === modalOverlay) {
+                modalOverlay.style.display = 'none';
+            }
         });
 
         function renderQuestion(index) {
