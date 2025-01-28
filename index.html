@@ -269,6 +269,7 @@
         <div id="results">
             <h2>Ditt resultat</h2>
             <p id="results-text"></p>
+	    <button class="btn restart" id="restart-test">Börja om testet</button>
         </div>
     </div>
 
@@ -554,20 +555,19 @@
 
 	const introText = document.getElementById('intro-text');
         const questionsContainer = document.getElementById('questions-container');
-        const questionEl = document.getElementById('question');
         const quizNav = document.getElementById('quiz-nav');
-        const prevButton = document.querySelector('.btn.prev');
-	const nextButton = document.querySelector('.btn.next');
-        const results = document.getElementById('results');
+	const prevButton = document.getElementById('prev-btn');
+	const nextButton = document.getElementById('next-btn');
         const resultsText = document.getElementById('results-text');
-        const initialText = document.querySelector('.initial-text');
         const resultsDiv = document.getElementById('results');
         const startButton = document.getElementById('start-test');
+	const restartButton = document.getElementById('restart-test');
 
 	 // Open Modal
         openModal.addEventListener('click', function (e) {
             e.preventDefault(); // Prevent the default link behavior
-            modalOverlay.style.display = 'flex';
+		modalOverlay.style.display = modalOverlay.style.display === 'none' ? 'flex' : 'none';
+
         });
 
         // Close Modal
@@ -641,7 +641,7 @@
         nextButton.addEventListener('click', () => {
             const selected = questionsContainer.querySelector('input[type="radio"]:checked');
             if (!selected) {
-                alert('Vänligen välj ett alternativ innan du går vidare.');
+                alert('Vänligen välj ett alternativ för att fortsätta till nästa fråga.');
                 return;
             }
 
@@ -674,6 +674,14 @@
                 }
             }
         });
+        restartButton.addEventListener('click', () => {
+	    userAnswers = {}; // Clear answers
+	    currentQuestionIndex = 0; // Reset question index
+	    resultsDiv.classList.remove('active'); // Hide results
+	    quizNav.classList.add('active'); // Show navigation
+	    renderQuestion(currentQuestionIndex); // Render the first question
+	});
+
     </script>
 </body>
 </html>
