@@ -22,6 +22,16 @@
         h1 span {
             opacity: 0.4;
         }
+	a.link {
+            color: #007e8f;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        a.link:hover {
+            text-decoration: underline;
+            color: #005f6b;
+        }
         .intro-text {
             margin-bottom: 20px;
             position: relative;
@@ -176,7 +186,7 @@
             <p>
                 Genom att förstå dessa kärleksspråk kan du förbättra dina relationer och kommunicera din kärlek på ett sätt som är meningsfullt för din partner.
             </p>
-            <p><a href="#mer-info" class="read-more" id="open-modal">Läs mer om Kärlekens fem språk »</a></p>
+		<a href="#" class="link" id="open-modal">Läs mer om Kärlekens fem språk</a>
             <button class="btn start" id="start-test">Påbörja testet</button>
         </div>
 	<div class="modal-overlay" id="modal-overlay">
@@ -533,9 +543,8 @@
 			}
 		};
         const userAnswers = {};
-	    
 	const modalOverlay = document.getElementById('modal-overlay');
-	const openModal = document.getElementById('open-modal');
+        const openModal = document.getElementById('open-modal');
         const closeModal = document.getElementById('close-modal');
         const progressBar = document.getElementById('progress-bar');
         const introText = document.querySelector('.intro-text');
@@ -548,8 +557,9 @@
         const resultsText = document.getElementById('results-text');
         const startButton = document.getElementById('start-test');
 
-	// Open Modal
-        openModal.addEventListener('click', function () {
+	 // Open Modal
+        openModal.addEventListener('click', function (e) {
+            e.preventDefault(); // Prevent the default link behavior
             modalOverlay.style.display = 'flex';
         });
 
