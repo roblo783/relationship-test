@@ -551,14 +551,17 @@
         const openModal = document.getElementById('open-modal');
         const closeModal = document.getElementById('close-modal');
         const progressBar = document.getElementById('progress-bar');
-        const introText = document.querySelector('.intro-text');
-        const initialText = document.querySelector('.initial-text');
+
+	const intro = document.getElementById('intro');
         const questionsContainer = document.getElementById('questions-container');
-        const quizNav = document.querySelector('.quiz-nav');
-        const prevButton = document.querySelector('.prev');
-        const nextButton = document.querySelector('.next');
-        const resultsDiv = document.getElementById('results');
+        const questionEl = document.getElementById('question');
+        const quizNav = document.getElementById('quiz-nav');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const results = document.getElementById('results');
         const resultsText = document.getElementById('results-text');
+        const initialText = document.querySelector('.initial-text');
+        const resultsDiv = document.getElementById('results');
         const startButton = document.getElementById('start-test');
 
 	 // Open Modal
