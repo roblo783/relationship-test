@@ -556,13 +556,15 @@
         const questionsContainer = document.getElementById('questions-container');
         const questionEl = document.getElementById('question');
         const quizNav = document.getElementById('quiz-nav');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
+        const prevButton = document.querySelector('.btn.prev');
+	const nextButton = document.querySelector('.btn.next');
         const results = document.getElementById('results');
         const resultsText = document.getElementById('results-text');
         const initialText = document.querySelector('.initial-text');
         const resultsDiv = document.getElementById('results');
         const startButton = document.getElementById('start-test');
+
+	    
 
 	 // Open Modal
         openModal.addEventListener('click', function (e) {
@@ -582,24 +584,24 @@
             }
         });
 
-	    function renderQuestion(index) {
-            const questionData = questionsData[index];
-            questionsContainer.innerHTML = 
-                <div class="quest-item active">
-                    <p class="indicator">Fråga ${index + 1} / ${questionsData.length}</p>
-                    <p class="question-text">${questionData.question}</p>
-                    <div class="radio-items">
-                        ${questionData.options.map((option, i) => 
-                            <div class="radio-item">
-                                <input type="radio" name="q${index}" id="q${index}-${i}" value="${option.value}" data-weight="${option.weight}">
-                                <label for="q${index}-${i}">${option.text}</label>
-                            </div>
-                        ).join('')}
-                    </div>
-                </div>
-            ;
-        }
-
+    function renderQuestion(index) {
+	    const questionData = questionsData[index];
+	    questionsContainer.innerHTML = `
+	        <div class="quest-item active">
+	            <p class="indicator">Fråga ${index + 1} / ${questionsData.length}</p>
+	            <p class="question-text">${questionData.question}</p>
+	            <div class="radio-items">
+	                ${questionData.options.map((option, i) => `
+	                    <div class="radio-item">
+	                        <input type="radio" name="q${index}" id="q${index}-${i}" value="${option.value}" data-weight="${option.weight}">
+	                        <label for="q${index}-${i}">${option.text}</label>
+	                    </div>
+	                `).join('')}
+	            </div>
+	        </div>
+	    `;
+	}
+	    
         function calculateResults() {
             Object.keys(scores).forEach(key => scores[key] = 0);
             Object.values(userAnswers).forEach(({ value, weight }) => {
@@ -630,18 +632,14 @@
 				</ul>
 			`;
 		}
-		
-		
-		
-		
-	document.getElementById('start-test').addEventListener('click', () => {
-	    intro.classList.add('hidden'); // Göm introduktionen
+			
+	startButton.addEventListener('click', () => {
+	    introText.classList.add('hidden'); // Göm introduktionen
 	    questionsContainer.classList.add('active'); // Visa frågorna
 	    quizNav.classList.add('active'); // Visa navigationsknapparna
-	    renderQuestion(); // Rendera första frågan
+	    renderQuestion(currentQuestionIndex); // Rendera första frågan
 	});
 	    
-
         nextButton.addEventListener('click', () => {
             const selected = questionsContainer.querySelector('input[type="radio"]:checked');
             if (!selected) {
