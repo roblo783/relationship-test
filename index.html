@@ -1063,12 +1063,13 @@ prevButton.addEventListener('click', () => {
 });
 	    
 restartButton.addEventListener('click', () => {
-    userAnswers = {}; // Clear answers
+    userAnswers = {}; // Clear previous answers
     currentQuestionIndex = 0; // Reset question index
-    resultsDiv.classList.remove('active'); // Hide results
-    quizNav.classList.add('active'); // Show navigation
+    resultsDiv.classList.remove('active'); // Hide results section
+    quizNav.classList.add('active'); // Show navigation buttons
+    questionsContainer.classList.add('active'); // Show questions container
     renderQuestion(currentQuestionIndex); // Render the first question
-    updateProgressBar();
+    updateProgressBar(); // Reset progress bar
 });
 
  <  / script >
