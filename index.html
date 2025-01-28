@@ -582,21 +582,23 @@
             }
         });
 
-	function renderQuestion() {
-	    const currentQuestion = questions[currentQuestionIndex];
-	    questionEl.innerHTML = `
-	        <div class="indicator">Fråga ${currentQuestionIndex + 1} av ${questions.length}</div>
-	        <p>${currentQuestion.question}</p>
-	        ${currentQuestion.options
-	            .map(
-	                (option, index) =>
-	                    `<label><input type="radio" name="question-${currentQuestionIndex}" value="${option}"> ${option}</label><br>`
-	            )
-	            .join('')}
-	    `;
-	    prevBtn.disabled = currentQuestionIndex === 0; // Inaktivera "Föregående" på första frågan
-	    nextBtn.textContent = currentQuestionIndex === questions.length - 1 ? 'Visa resultat' : 'Nästa'; // Ändra text på "Nästa"
-	}
+	    function renderQuestion(index) {
+            const questionData = questionsData[index];
+            questionsContainer.innerHTML = 
+                <div class="quest-item active">
+                    <p class="indicator">Fråga ${index + 1} / ${questionsData.length}</p>
+                    <p class="question-text">${questionData.question}</p>
+                    <div class="radio-items">
+                        ${questionData.options.map((option, i) => 
+                            <div class="radio-item">
+                                <input type="radio" name="q${index}" id="q${index}-${i}" value="${option.value}" data-weight="${option.weight}">
+                                <label for="q${index}-${i}">${option.text}</label>
+                            </div>
+                        ).join('')}
+                    </div>
+                </div>
+            ;
+        }
 
         function calculateResults() {
             Object.keys(scores).forEach(key => scores[key] = 0);
