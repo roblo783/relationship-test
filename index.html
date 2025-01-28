@@ -173,6 +173,21 @@ a.link: hover {
 .modal - close: hover {
     color: #000;
 }
+.progress-container {
+    width: 100%;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background-color: #007e8f;
+    transition: width 0.3s ease-in-out;
+}
  <  / style >
  <  / head >
  < body >
@@ -265,17 +280,21 @@ Fysisk kontakt är avgörande för att dessa personer ska känna sig älskade oc
  <  / div >
  < p class = "initial-text" > Detta test innehåller frågor som hjälper dig att reflektera över din relation.Svara ärligt för att få den mest relevanta feedbacken.Välj det svar som passar in bäst på dig.När du är färdig tryck på "Nästa fråga" för att fortsätta. <  / p >
      < div id = "questions-container" >  <  / div >
+	<div class="progress-container">
+	    <div class="progress-bar" id="progress-bar"></div>
+	</div>
      < nav class = "quiz-nav" id = "quiz-nav" >
      < button class = "btn prev" id = "prev-btn" disabled > Föregående fråga <  / button >
      < button class = "btn next" id = "next-btn" > Nästa fråga <  / button >
      <  / nav >
      < div id = "results" >
-     < h2 > Ditt resultat <  / h2 >
-     < p id = "results-text" >  <  / p >
-     < button class = "btn restart" id = "restart-test" > Börja om testet <  / button >
+	     <canvas id="results-chart" width="400" height="400"></canvas>
+	     < h2 > Ditt resultat <  / h2 >
+	     < p id = "results-text" >  <  / p >
+	     < button class = "btn restart" id = "restart-test" > Börja om testet <  / button >
      <  / div >
      <  / div >
-
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
      < script >
     const questionsData = [{
             question: "Vad får dig att känna dig mest uppskattad?",
@@ -960,6 +979,32 @@ function showResults() {
 					`).join('')}
 				</ul>
 			`;
+					  
+     // Prepare data for the chart
+    const labels = sortedScores.map(([key]) => loveLanguagesDescriptions[key].title);
+    const data = sortedScores.map(([_, score]) => score);
+
+    // Render the chart
+    const ctx = document.getElementById('results-chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar', // Use 'bar' or 'pie'
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Poäng',
+                data: data,
+                backgroundColor: ['#007e8f', '#005f6b', '#73c5e1', '#9de1f2', '#cceff9'],
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+            },
+        }
+    });
 }
 
 startButton.addEventListener('click', () => {
@@ -968,6 +1013,12 @@ startButton.addEventListener('click', () => {
     quizNav.classList.add('active'); // Visa navigationsknapparna
     renderQuestion(currentQuestionIndex); // Rendera första frågan
 });
+
+function updateProgressBar() {
+    const progressBar = document.getElementById('progress-bar');
+    const progress = ((currentQuestionIndex + 1) / questionsData.length) * 100;
+    progressBar.style.width = `${progress}%`;
+}
 
 nextButton.addEventListener('click', () => {
     const selected = questionsContainer.querySelector('input[type="radio"]:checked');
@@ -996,6 +1047,7 @@ nextButton.addEventListener('click', () => {
         quizNav.classList.remove('active');
         showResults();
     }
+    updateProgressBar();
 });
 
 prevButton.addEventListener('click', () => {
@@ -1007,13 +1059,16 @@ prevButton.addEventListener('click', () => {
             prevButton.disabled = true;
         }
     }
+    updateProgressBar();
 });
+	    
 restartButton.addEventListener('click', () => {
     userAnswers = {}; // Clear answers
     currentQuestionIndex = 0; // Reset question index
     resultsDiv.classList.remove('active'); // Hide results
     quizNav.classList.add('active'); // Show navigation
     renderQuestion(currentQuestionIndex); // Render the first question
+    updateProgressBar();
 });
 
  <  / script >
