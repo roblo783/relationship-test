@@ -581,24 +581,22 @@
                 modalOverlay.style.display = 'none';
             }
         });
-	    
-        function renderQuestion(index) {
-            const questionData = questionsData[index];
-            questionsContainer.innerHTML = `
-                <div class="quest-item active">
-                    <p class="indicator">Fråga ${index + 1} / ${questionsData.length}</p>
-                    <p class="question-text">${questionData.question}</p>
-                    <div class="radio-items">
-                        ${questionData.options.map((option, i) => `
-                            <div class="radio-item">
-                                <input type="radio" name="q${index}" id="q${index}-${i}" value="${option.value}" data-weight="${option.weight}">
-                                <label for="q${index}-${i}">${option.text}</label>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
+
+	function renderQuestion() {
+	    const currentQuestion = questions[currentQuestionIndex];
+	    questionEl.innerHTML = `
+	        <div class="indicator">Fråga ${currentQuestionIndex + 1} av ${questions.length}</div>
+	        <p>${currentQuestion.question}</p>
+	        ${currentQuestion.options
+	            .map(
+	                (option, index) =>
+	                    `<label><input type="radio" name="question-${currentQuestionIndex}" value="${option}"> ${option}</label><br>`
+	            )
+	            .join('')}
+	    `;
+	    prevBtn.disabled = currentQuestionIndex === 0; // Inaktivera "Föregående" på första frågan
+	    nextBtn.textContent = currentQuestionIndex === questions.length - 1 ? 'Visa resultat' : 'Nästa'; // Ändra text på "Nästa"
+	}
 
         function calculateResults() {
             Object.keys(scores).forEach(key => scores[key] = 0);
@@ -634,16 +632,13 @@
 		
 		
 		
+	document.getElementById('start-test').addEventListener('click', () => {
+	    intro.classList.add('hidden'); // Göm introduktionen
+	    questionsContainer.classList.add('active'); // Visa frågorna
+	    quizNav.classList.add('active'); // Visa navigationsknapparna
+	    renderQuestion(); // Rendera första frågan
+	});
 		
-		
-
-        startButton.addEventListener('click', () => {
-            introText.classList.add('hidden');
-            initialText.classList.remove('hidden');
-            quizNav.classList.add('active');
-            questionsContainer.classList.add('active');
-            renderQuestion(currentQuestionIndex);
-        });
 
         nextButton.addEventListener('click', () => {
             const selected = questionsContainer.querySelector('input[type="radio"]:checked');
