@@ -16,7 +16,7 @@
             margin: 0 auto;
         }
         h1, h2 {
-            text-align: center;
+            text-align: left;
             line-height: 1.2;
         }
         h1 span {
@@ -37,15 +37,18 @@
             position: relative;
             border: 1px solid #ccc;
             border-radius: 10px;
-            padding: 10px 20px 20px 20px;
+            padding: 10px 20px 20px;
             background-color: #fff;
         }
         .intro-text.hidden {
             display: none;
         }
-        .initial-text {
-            margin-bottom: 20px;
+        .questions-instructions {
             display: none;
+        }
+		.questions-instructions.active {
+            margin-bottom: 20px;
+            display: block;
         }
         #questions-container {
             display: none;
@@ -125,6 +128,10 @@
         .btn:hover {
             background-color: #005f6b;
         }
+		.btn:disabled {
+			background-color: rgba(100, 100, 100, 0.3);
+			color: rgba(16, 16, 16, 0.3);
+        }
         #results {
             display: none;
         }
@@ -137,37 +144,123 @@
             padding: 20px;
             background-color: #fff;
         }
+		#chart-wrapper {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+		#chart-legend {
+			margin-left: 20px;
+			text-align: left;
+			max-width: 350px;
+		}
+
+		#chart-legend h3 {
+			padding-bottom: 3px;
+			border-bottom: 2px dotted #ddd;
+			font-size: 20px;
+			font-weight: bold;
+			color: #007e8f;
+			margin-bottom: 10px;
+		}
+
+		#chart-legend ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		#chart-legend li {
+			display: flex;
+			align-items: center;
+			margin-bottom: 6px;
+		}
+
+		.legend-color {
+			width: 14px;
+			height: 14px;
+			display: inline-block;
+			margin-right: 8px;
+			border-radius: 50%;
+		}
+		#results-chart {
+			max-width: 250px;
+			max-height: 250px;
+			width: 100%;
+			height: auto;
+		}
+		@media (max-width: 600px) {
+			#results-chart {
+				max-width: 100%; /* Full width on mobile */
+				height: auto;
+			}
+		}
+		@media (max-width: 600px) {
+			#chart-wrapper {
+				flex-direction: column;
+				align-items: center;
+			}
+			
+			#chart-legend {
+				margin-left: 0;
+				margin-top: 10px;
+				text-align: center;
+			}
+		}
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .modal {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80%;
-            overflow-y: auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: left;
-            position: relative;
-        }
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			visibility: hidden;
+			z-index: 1000;
+		}
+
+		.modal-overlay.visible {
+			visibility: visible;
+		}
+		.modal {
+			background: white;
+			border-radius: 12px;
+			max-width: 700px;
+			width: 90%;
+			max-height: 90%;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			text-align: left;
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			padding: 30px 10px 30px 30px;
+		}
+
+		.modal-content {
+			overflow-y: auto;
+			max-height: 60vh;
+			padding-bottom: 10px;
+		}
         .modal h2 {
             margin-top: 0;
+			font-size: 1.3em;
+			margin-block-end: 4px;
+        }
+		.modal h3 {
+            margin-top: 0;
+			font-size: 1.16em;
+			margin-block-end: 4px;
+        }
+		.modal p {
+			margin-block-start: 2px;
         }
         .modal-close {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 6px;
+            right: 6px;
             background: none;
             border: none;
             font-size: 20px;
@@ -177,13 +270,18 @@
         .modal-close:hover {
             color: #000;
         }
-        .progress-container {
+		.progress-container {
             width: 100%;
             height: 10px;
             background-color: #e0e0e0;
             border-radius: 5px;
             margin-bottom: 20px;
             overflow: hidden;
+			position: relative;
+			visibility: hidden;
+        }
+        .progress-container.active {
+			visibility: visible;
         }
         .progress-bar {
             width: 0%;
@@ -196,7 +294,955 @@
 <body>
     <div class="container">
         <h1>Kärlekens fem språk <span>– vilket är ditt kärleksspråk?</span></h1>
-        <!-- Remaining Content -->
-    </div>
-</body>
+		 <div class="intro-text" id="intro-text">
+		 <p><strong>Kärlekens fem språk</strong> är ett koncept utvecklat av psykologen och relationsexperten Gary Chapman. Det beskriver hur människor uttrycker och tar emot kärlek på olika sätt, vilket han kallar för kärleksspråk. Precis som med vanliga språk kan det uppstå missförstånd om du och din partner talar olika kärleksspråk utan att förstå varandras behov. Genom att lära dig både ditt eget och din partners kärleksspråk kan du förbättra kommunikationen och stärka relationen. De fem språken är :  </p>
+		 <ul>
+		 <li><strong>Uppmuntrande ord:</strong> Att säga uppskattande eller kärleksfulla ord.</li>
+		 <li><strong>Kvalitetstid:</strong> Att ge odelad uppmärksamhet och spendera tid tillsammans.</li>
+		 <li><strong>Gåvor:</strong> Att ge symboliska gåvor som uttrycker omtanke.</li>
+		 <li><strong>Tjänster:</strong> Att göra något praktiskt för att underlätta för den andra.</li>
+		 <li><strong>Fysisk beröring:  </strong> Att använda kramar, kyssar eller andra beröringar för att visa kärlek.</li>
+		 </ul>
+		 <p>
+		Genom att förstå dessa kärleksspråk kan du förbättra dina relationer och kommunicera din kärlek på ett sätt som är meningsfullt för din partner.
+		 </p>
+		 <p>
+			<a href="#" class="link" id="open-modal"> Läs mer om Kärlekens fem språk »</a>
+		 </p>
+		 <button class="btn start" id="start-test"> Påbörja testet »</button>
+     </div>
+     <div class="modal-overlay" id="modal-overlay">
+		 <div class="modal">
+			<button class="modal-close" id="close-modal" aria-label="Stäng modal">&times;</button>
+			<div class="modal-content">
+			 <h2>Varför är detta värdefullt ?</h2>
+			 <p>Många relationer drabbas av konflikter eller otillfredsställelse när vi inte förstår hur vår partner uttrycker kärlek eller när vi själva inte känner oss älskade. Om du uttrycker din kärlek på ett sätt som inte matchar din partners kärleksspråk kan det leda till missförstånd. På samma sätt kan du missa din partners kärleksuttryck om du inte är uppmärksam på hens kärleksspråk.</p>
+
+			 <p> Genom att förstå kärlekens fem språk kan ni:
+			 <ul>
+			 <li> Känna er tryggare och mer älskade i relationen.</li>
+			 <li> Förbättra kommunikationen och förebygga missförstånd.</li>
+			 <li> Bygga en djupare och mer meningsfull relation.</li>
+			 </ul>
+			 </p>
+
+			 <h2> De fem kärleksspråken </h2>
+
+			 <h3> 1.Uppmuntrande ord </h3>
+			 <p> För de som talar detta kärleksspråk är ord kraftfulla. Komplimanger, uppmuntran och kärleksfulla uttryck visar uppskattning och kärlek.Exempelvis:
+			 <ul>
+			 <li> "Jag uppskattar allt du gör för oss." </li>
+			 <li> "Du ser fantastisk ut idag!" </li>
+			 </ul>
+			Negativa eller sårande ord kan ha en djup inverkan på dessa personer. </p>
+
+			 <h3> 2.Kvalitetstid </h3>
+			 <p> Här är odelad uppmärksamhet nyckeln. Det handlar om att vara närvarande och dela stunder tillsammans.Exempelvis:
+			 <ul>
+			 <li> Ha djupa samtal utan distraktioner. </li>
+			 <li> Göra aktiviteter tillsammans, som promenader eller middagar. </li>
+			 </ul>
+			För dessa personer är tid tillsammans det ultimata kärleksbeviset. </p>
+
+			 <h3> 3.Gåvor </h3>
+			 <p> För vissa är gåvor en symbol för kärlek och omtanke. Det behöver inte vara dyrt – det är tanken bakom som räknas.Exempelvis:
+			 <ul>
+			 <li> En liten överraskning som favoritgodiset. </li>
+			 <li> En handskriven lapp eller ett smycke. </li>
+			 </ul>
+			Gåvor är för dessa personer en fysisk representation av kärlek. </p>
+
+			 <h3> 4.Tjänster </h3>
+			 <p> Detta språk handlar om att visa kärlek genom handlingar och praktisk hjälp. Exempelvis:
+			 <ul>
+			 <li> Diska, laga mat eller fixa något i hemmet. </li>
+			 <li> Köra din partner till jobbet när bilen är på verkstaden. </li>
+			 </ul>
+			Handlingarna visar omsorg och uppskattning. </p>
+
+			 <h3> 5.Fysisk beröring </h3>
+			 <p> För vissa är fysisk närhet och beröring det tydligaste sättet att känna kärlek. Exempelvis:
+			 <ul>
+			 <li> Kramar, kyssar och hålla handen. </li>
+			 <li> En lätt beröring på ryggen när ni går förbi varandra. </li>
+			 </ul>
+			Fysisk kontakt är avgörande för att dessa personer ska känna sig älskade och trygga. </p>
+
+			 <h2> Hur kan detta användas ?  </h2>
+			 <p> För att använda konceptet i din relation kan du börja med följande steg :  </p>
+			 <ol>
+			 <li>  <strong> Identifiera era kärleksspråk:  </strong> Reflektera över vad som får dig att känna dig mest älskad och be din partner göra samma sak. </li>
+			 <li>  <strong> Kommunicera och öva:  </strong> Dela era kärleksspråk med varandra och försök visa kärlek på ett sätt som är meningsfullt för den andra. </li>
+			 <li>  <strong> Var flexibel och uppmärksam:  </strong> Kom ihåg att kärleksspråk kan förändras över tid och bero på livets omständigheter. </li>
+			 </ol>
+
+			 <p> Genom att förstå och tala din partners kärleksspråk visar du att du verkligen ser och uppskattar dem. Detta kan skapa en djupare känsla av intimitet och trygghet i relationen. </p>
+		</div>
+	 </div>
+	 </div>
+	 <p class="questions-instructions" id="questions-instructions"> Detta test innehåller frågor som hjälper dig att reflektera över din relation. Svara ärligt för att få den mest relevanta feedbacken. Välj det svar som passar in bäst på dig. När du är färdig tryck på "Nästa fråga" för att fortsätta.</p>
+		<div id="questions-container">  </div>
+		<div class="progress-container" id="progress-container">
+			<div class="progress-bar" id="progress-bar"></div>
+		</div>
+		 <nav class="quiz-nav" id="quiz-nav">
+			 <button class="btn prev" id="prev-btn" disabled> Föregående fråga </button>
+			 <button class="btn next" id="next-btn"> Nästa fråga </button>
+		 </nav>
+		 <div id="results">
+			<div id="chart-wrapper">
+				<canvas id="results-chart"></canvas>
+				<div id="chart-legend"></div>
+			</div>
+			<h2>Ditt resultat</h2>
+			<p id="results-text"></p>
+			<button class="btn restart" id="restart-test">Börja om testet</button>
+		</div>
+		</div>
+	 </div>
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <script>
+    const questionsData = [{
+            question: "Vad får dig att känna dig mest uppskattad?",
+            options: [{
+                    text: "Uppmuntrande ord",
+                    value: "words",
+                    weight: 5
+                }, {
+                    text: "Kvalitetstid",
+                    value: "time",
+                    weight: 5
+                }, {
+                    text: "Genomtänkta gåvor",
+                    value: "gifts",
+                    weight: 5
+                }, {
+                    text: "Hjälp med vardagliga sysslor",
+                    value: "service",
+                    weight: 5
+                }, {
+                    text: "Fysisk beröring",
+                    value: "touch",
+                    weight: 5
+                }
+            ]
+        }, {
+            question: "Vad betyder mest för dig på en speciell dag?",
+            options: [{
+                    text: "Ett hjärtligt 'jag älskar dig'",
+                    value: "words",
+                    weight: 5
+                }, {
+                    text: "Att spendera tid tillsammans",
+                    value: "time",
+                    weight: 5
+                }, {
+                    text: "En gåva som visar att de tänker på mig",
+                    value: "gifts",
+                    weight: 5
+                }, {
+                    text: "Att de tar hand om något jag behövde hjälp med",
+                    value: "service",
+                    weight: 5
+                }, {
+                    text: "En varm kram",
+                    value: "touch",
+                    weight: 5
+                }
+            ]
+        }, {
+            question: "Hur ofta känner du att din partner prioriterar tid med dig?",
+            options: [{
+                    text: "Alltid",
+                    value: "time",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "time",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "time",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "time",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "time",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta planerar ni tillsammans för veckan?",
+            options: [{
+                    text: "Varje vecka",
+                    value: "service",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "service",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "service",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "service",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "service",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur viktigt är fysisk närhet för dig i relationen?",
+            options: [{
+                    text: "Mycket viktig",
+                    value: "touch",
+                    weight: 5
+                }, {
+                    text: "Viktig",
+                    value: "touch",
+                    weight: 4
+                }, {
+                    text: "Neutral",
+                    value: "touch",
+                    weight: 3
+                }, {
+                    text: "Mindre viktig",
+                    value: "touch",
+                    weight: 2
+                }, {
+                    text: "Inte viktig",
+                    value: "touch",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta följer ni upp veckan tillsammans?",
+            options: [{
+                    text: "Varje vecka",
+                    value: "service",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "service",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "service",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "service",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "service",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta visar du uppskattning för din partner?",
+            options: [{
+                    text: "Alltid",
+                    value: "words",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "words",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "words",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "words",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "words",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta har ni tid för varandra utan distraktioner?",
+            options: [{
+                    text: "Varje dag",
+                    value: "time",
+                    weight: 5
+                }, {
+                    text: "Flera gånger i veckan",
+                    value: "time",
+                    weight: 4
+                }, {
+                    text: "En gång i veckan",
+                    value: "time",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "time",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "time",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta diskuterar ni era gemensamma mål?",
+            options: [{
+                    text: "Alltid",
+                    value: "words",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "words",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "words",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "words",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "words",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur viktigt är det för dig att planera saker tillsammans?",
+            options: [{
+                    text: "Mycket viktigt",
+                    value: "service",
+                    weight: 5
+                }, {
+                    text: "Viktigt",
+                    value: "service",
+                    weight: 4
+                }, {
+                    text: "Neutral",
+                    value: "service",
+                    weight: 3
+                }, {
+                    text: "Mindre viktigt",
+                    value: "service",
+                    weight: 2
+                }, {
+                    text: "Inte viktigt",
+                    value: "service",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta deltar ni i aktiviteter som stärker er relation?",
+            options: [{
+                    text: "Alltid",
+                    value: "time",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "time",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "time",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "time",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "time",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta visar ni uppskattning för varandras arbete i vardagen?",
+            options: [{
+                    text: "Alltid",
+                    value: "words",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "words",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "words",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "words",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "words",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur viktigt är det för dig att dela framtida drömmar med din partner?",
+            options: [{
+                    text: "Mycket viktigt",
+                    value: "words",
+                    weight: 5
+                }, {
+                    text: "Viktigt",
+                    value: "words",
+                    weight: 4
+                }, {
+                    text: "Neutral",
+                    value: "words",
+                    weight: 3
+                }, {
+                    text: "Mindre viktigt",
+                    value: "words",
+                    weight: 2
+                }, {
+                    text: "Inte viktigt",
+                    value: "words",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta skrattar ni tillsammans?",
+            options: [{
+                    text: "Dagligen",
+                    value: "time",
+                    weight: 5
+                }, {
+                    text: "Flera gånger i veckan",
+                    value: "time",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "time",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "time",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "time",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta visar ni ömhet offentligt?",
+            options: [{
+                    text: "Alltid",
+                    value: "touch",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "touch",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "touch",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "touch",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "touch",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur mycket anstränger ni er för att lösa konflikter på ett konstruktivt sätt?",
+            options: [{
+                    text: "Alltid",
+                    value: "words",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "words",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "words",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "words",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "words",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur viktigt är det för dig att känna att din partner stöttar dig känslomässigt?",
+            options: [{
+                    text: "Mycket viktigt",
+                    value: "words",
+                    weight: 5
+                }, {
+                    text: "Viktigt",
+                    value: "words",
+                    weight: 4
+                }, {
+                    text: "Neutral",
+                    value: "words",
+                    weight: 3
+                }, {
+                    text: "Mindre viktigt",
+                    value: "words",
+                    weight: 2
+                }, {
+                    text: "Inte viktigt",
+                    value: "words",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta diskuterar ni era olika behov och förväntningar?",
+            options: [{
+                    text: "Alltid",
+                    value: "words",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "words",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "words",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "words",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "words",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta tar ni tid för att fira varandras framgångar?",
+            options: [{
+                    text: "Alltid",
+                    value: "words",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "words",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "words",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "words",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "words",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta diskuterar ni hur ni kan förbättra er relation?",
+            options: [{
+                    text: "Alltid",
+                    value: "words",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "words",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "words",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "words",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "words",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta är du nöjd med kvaliteten på tid ni spenderar tillsammans?",
+            options: [{
+                    text: "Alltid",
+                    value: "time",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "time",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "time",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "time",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "time",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta tycker du att din partner uppskattar dina handlingar?",
+            options: [{
+                    text: "Alltid",
+                    value: "service",
+                    weight: 5
+                }, {
+                    text: "Ofta",
+                    value: "service",
+                    weight: 4
+                }, {
+                    text: "Ibland",
+                    value: "service",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "service",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "service",
+                    weight: 1
+                }
+            ]
+        }, {
+            question: "Hur ofta upplever du fysisk närhet från din partner?",
+            options: [{
+                    text: "Dagligen",
+                    value: "touch",
+                    weight: 5
+                }, {
+                    text: "Flera gånger i veckan",
+                    value: "touch",
+                    weight: 4
+                }, {
+                    text: "En gång i veckan",
+                    value: "touch",
+                    weight: 3
+                }, {
+                    text: "Sällan",
+                    value: "touch",
+                    weight: 2
+                }, {
+                    text: "Aldrig",
+                    value: "touch",
+                    weight: 1
+                }
+            ]
+        }
+    ];
+
+let currentQuestionIndex = 0;
+const scores = {
+    words: 0,
+    time: 0,
+    gifts: 0,
+    service: 0,
+    touch: 0
+};
+const loveLanguagesDescriptions = {
+    words: {
+        title: "Uppmuntrande ord",
+        description: `
+					Uppmuntrande ord handlar om att uttrycka sin kärlek genom att säga positiva och stödjande saker. 
+					Människor med detta kärleksspråk känner sig mest älskade när de hör komplimanger, vänliga ord och bekräftelser.
+					Behovet kan vara att höra ett enkelt "jag älskar dig" eller att få erkännande för sina prestationer.
+				`
+    },
+    time: {
+        title: "Kvalitetstid",
+        description: `
+					Kvalitetstid innebär att ge odelad uppmärksamhet till sin partner. För dessa personer är det viktigast att känna sig prioriterade och att få dela stunder tillsammans.
+					Det kan vara att ha djupa samtal, gå på en promenad tillsammans eller bara njuta av varandras sällskap utan distraktioner.
+				`
+    },
+    gifts: {
+        title: "Gåvor",
+        description: `
+					Gåvor är inte bara materiella föremål utan symboler för kärlek och omtanke. För personer med detta kärleksspråk är det tanken bakom gåvan som betyder mest.
+					En oväntad present, en lapp med fina ord, eller något som visar att du har tänkt på dem kan betyda världen.
+				`
+    },
+    service: {
+        title: "Tjänster",
+        description: `
+					Tjänster handlar om att visa kärlek genom handlingar. Detta kan vara att laga mat, städa, eller hjälpa till med vardagliga uppgifter.
+					För dessa personer betyder handlingar ofta mer än ord – det är ett sätt att visa att man bryr sig och vill underlätta för sin partner.
+				`
+    },
+    touch: {
+        title: "Fysisk beröring",
+        description: `
+					Fysisk beröring är ett kraftfullt sätt att uttrycka kärlek. En person med detta kärleksspråk känner sig mest älskad genom kramar, kyssar, handhållning eller en kärleksfull klapp på axeln.
+					Det handlar om att skapa en känslomässig koppling genom fysisk närhet.
+				`
+    }
+};
+const userAnswers = {};
+const modalOverlay = document.getElementById('modal-overlay');
+const openModal = document.getElementById('open-modal');
+const closeModal = document.getElementById('close-modal');
+const progressBar = document.getElementById('progress-bar');
+const progressContainer = document.getElementById('progress-container');
+
+const introText = document.getElementById('intro-text');
+const questionsInstructions = document.getElementById('questions-instructions');
+const questionsContainer = document.getElementById('questions-container');
+const quizNav = document.getElementById('quiz-nav');
+const prevButton = document.getElementById('prev-btn');
+const nextButton = document.getElementById('next-btn');
+const resultsText = document.getElementById('results-text');
+const resultsDiv = document.getElementById('results');
+const startButton = document.getElementById('start-test');
+const restartButton = document.getElementById('restart-test');
+
+// Open Modal
+openModal.addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent the default link behavior
+    modalOverlay.classList.toggle('visible');
+});
+
+// Close Modal
+closeModal.addEventListener('click', function () {
+    modalOverlay.classList.toggle('visible');
+});
+
+// Close Modal when clicking outside
+window.addEventListener('click', function (e) {
+    if (e.target === modalOverlay) {
+        modalOverlay.classList.toggle('visible');
+    }
+});
+
+function renderQuestion(index = 0) {
+    const questionData = questionsData[index];
+    questionsContainer.innerHTML = `
+	        <div class="quest-item active">
+	            <p class="indicator">Fråga ${index + 1} / ${questionsData.length}</p>
+	            <p class="question-text">${questionData.question}</p>
+	            <div class="radio-items">
+	                ${questionData.options.map((option, i) => `
+	                    <div class="radio-item">
+	                        <input type="radio" name="q${index}" id="q${index}-${i}" value="${option.value}" data-weight="${option.weight}">
+	                        <label for="q${index}-${i}">${option.text}</label>
+	                    </div>
+	                `).join('')}
+	            </div>
+	        </div>
+	    `;
+}
+
+function calculateResults() {
+    Object.keys(scores).forEach(key => scores[key] = 0);
+    Object.values(userAnswers).forEach(({
+            value,
+            weight
+        }) => {
+        scores[value] += weight;
+    });
+
+    const sortedScores = Object.entries(scores).sort((a, b) => b[1]-a[1]);
+    return sortedScores;
+}
+
+function showResults() {
+    const sortedScores = calculateResults();
+    const topLanguageKey = sortedScores[0][0];
+    const topLanguage = loveLanguagesDescriptions[topLanguageKey];
+	
+	questionsInstructions.classList.remove('active');
+	progressContainer.classList.remove('active');
+    resultsDiv.classList.add('active');
+    resultsText.innerHTML = `
+				<h3>Ditt kärleksspråk är: ${topLanguage.title}</h3>
+				<p>${topLanguage.description}</p>
+				${/* `<p>Här är dina poäng för alla kärleksspråk:</p>
+				<ul>
+					${sortedScores.map(([key, score]) => `
+						<li><strong>${loveLanguagesDescriptions[key].title}:</strong> ${score} poäng</li>
+					`).join('')}
+				</ul>` */ ''}
+			`;
+					  
+     // Prepare data for the chart
+    const labels = sortedScores.map(([key]) => loveLanguagesDescriptions[key].title);
+    const data = sortedScores.map(([_, score]) => score);
+
+    // Render the chart
+    const ctx = document.getElementById('results-chart').getContext('2d');
+
+	// Generate legend HTML with scores
+	const legendContainer = document.getElementById('chart-legend');
+	legendContainer.innerHTML = `
+		<h3>Här är dina poäng</h3>
+		<ul>
+			${sortedScores.map(([key, score]) => `
+				<li>
+					<span class="legend-color" style="background-color: ${getColor(key)};"></span>
+					${loveLanguagesDescriptions[key].title}: <span style="margin-right: 5px;"></span><strong>${score} poäng</strong>
+				</li>
+			`).join('')}
+		</ul>
+	`;
+
+	new Chart(ctx, {
+		type: 'pie',
+		data: {
+			labels: labels,
+			datasets: [{
+				data: data,
+				backgroundColor: ['#007e8f', '#005f6b', '#73c5e1', '#9de1f2', '#cceff9'],
+			}]
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: false,
+			layout: {
+				padding: 20
+			},
+			plugins: {
+				legend: {
+					display: false, // ✅ We will use a custom legend
+				},
+				tooltip: {
+					enabled: true,
+					callbacks: {
+						label: function(tooltipItem) {
+							return `${tooltipItem.label}: ${tooltipItem.raw} poäng`;
+						}
+					}
+				},
+				datalabels: {
+					anchor: 'end',
+					align: 'end',
+					formatter: (value, ctx) => ctx.chart.data.labels[ctx.dataIndex],
+					color: '#000',
+					font: {
+						weight: 'bold',
+						size: 12
+					}
+				}
+			}
+		}
+	});
+
+	// Function to return the correct color for each language
+	function getColor(key) {
+		const colors = {
+			words: '#007e8f',
+			time: '#005f6b',
+			gifts: '#73c5e1',
+			service: '#9de1f2',
+			touch: '#cceff9'
+		};
+		return colors[key] || '#ccc';
+	};
+}
+
+startButton.addEventListener('click', () => {
+    introText.classList.add('hidden'); // Hide introduction
+    questionsInstructions.classList.add('active'); // Show instructions
+    questionsContainer.classList.add('active'); // Show questions
+    quizNav.classList.add('active'); // Show navigation buttons
+    currentQuestionIndex = 0; // Ensure we start at the first question
+    renderQuestion(currentQuestionIndex); // Render the first question
+    prevButton.disabled = true; // Disable the "Previous Question" button initially
+	progressContainer.classList.add('active'); //Show progressbar
+    updateProgressBar(); // Ensure progress starts at 1st question
+});
+
+function updateProgressBar() {
+    const progressBar = document.getElementById('progress-bar');
+    const progress = ((currentQuestionIndex + 1) / questionsData.length) * 100;
+    progressBar.style.width = `${progress}%`;
+}
+
+nextButton.addEventListener('click', () => {
+    const selected = questionsContainer.querySelector('input[type="radio"]:checked');
+    if (!selected) {
+        alert('Vänligen välj ett alternativ för att fortsätta till nästa fråga.');
+        return;
+    }
+
+    const questionKey = `q${currentQuestionIndex}`;
+    const value = selected.value;
+    const weight = parseInt(selected.dataset.weight, 10);
+    userAnswers[questionKey] = {
+        value,
+        weight
+    };
+
+    if (currentQuestionIndex < questionsData.length-1) {
+        currentQuestionIndex++;
+        renderQuestion(currentQuestionIndex);
+        prevButton.disabled = false;
+		if (currentQuestionIndex === 0) {
+            prevButton.disabled = true;
+        }
+        if (currentQuestionIndex === questionsData.length-1) {
+            nextButton.textContent = 'Visa resultat';
+        }
+    } else {
+        questionsContainer.classList.remove('active');
+        quizNav.classList.remove('active');
+        showResults();
+    }
+    updateProgressBar();
+});
+
+prevButton.addEventListener('click', () => {
+    if (currentQuestionIndex> 0) {
+        currentQuestionIndex--;
+        renderQuestion(currentQuestionIndex);
+        nextButton.textContent = 'Nästa fråga';
+        if (currentQuestionIndex === 0) {
+            prevButton.disabled = true;
+        }
+    }
+    updateProgressBar();
+});
+	    
+restartButton.addEventListener('click', () => {
+    Object.keys(userAnswers).forEach(key => delete userAnswers[key]); // Rensa svar
+
+    currentQuestionIndex = 0; // Återställ index
+    resultsDiv.classList.remove('active'); // Dölj resultatet
+    quizNav.classList.add('active'); // Visa navigeringsknappar
+    questionsContainer.classList.add('active'); // Visa frågor igen
+    questionsInstructions.classList.add('active'); // Visa instruktioner
+    progressContainer.classList.add('active'); // Visa progressbar
+    
+    renderQuestion(currentQuestionIndex); // Återställ frågevisningen
+    updateProgressBar(); // Återställ progress
+    prevButton.disabled = true; // Se till att "Föregående" är inaktiverad i början
+    nextButton.textContent = 'Nästa fråga'; // Återställ knapptexten
+});
+
+ </script>
+ </body>
 </html>
