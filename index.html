@@ -309,8 +309,12 @@
 		 <p>
 			<a href="#" class="link" id="open-modal"> Läs mer om Kärlekens fem språk »</a>
 		 </p>
-		 <button class="btn start" id="start-test"> Påbörja testet »</button>
      </div>
+	 <div id="test-selection">
+		<h2>Påbörja testet</h2>
+		<button class="btn" id="long-test">Fullständigt test (62 frågor) »</button>
+		<button class="btn" id="short-test">Snabbtest (30 frågor) »</button>
+	</div>
      <div class="modal-overlay" id="modal-overlay">
 		 <div class="modal">
 			<button class="modal-close" id="close-modal" aria-label="Stäng modal">&times;</button>
@@ -402,560 +406,6 @@
 	 </div>
      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
      <script>
-    const questionsData = [{
-            question: "Vad får dig att känna dig mest uppskattad?",
-            options: [{
-                    text: "Uppmuntrande ord",
-                    value: "words",
-                    weight: 5
-                }, {
-                    text: "Kvalitetstid",
-                    value: "time",
-                    weight: 5
-                }, {
-                    text: "Genomtänkta gåvor",
-                    value: "gifts",
-                    weight: 5
-                }, {
-                    text: "Hjälp med vardagliga sysslor",
-                    value: "service",
-                    weight: 5
-                }, {
-                    text: "Fysisk beröring",
-                    value: "touch",
-                    weight: 5
-                }
-            ]
-        }, {
-            question: "Vad betyder mest för dig på en speciell dag?",
-            options: [{
-                    text: "Ett hjärtligt 'jag älskar dig'",
-                    value: "words",
-                    weight: 5
-                }, {
-                    text: "Att spendera tid tillsammans",
-                    value: "time",
-                    weight: 5
-                }, {
-                    text: "En gåva som visar att de tänker på mig",
-                    value: "gifts",
-                    weight: 5
-                }, {
-                    text: "Att de tar hand om något jag behövde hjälp med",
-                    value: "service",
-                    weight: 5
-                }, {
-                    text: "En varm kram",
-                    value: "touch",
-                    weight: 5
-                }
-            ]
-        }, {
-            question: "Hur ofta känner du att din partner prioriterar tid med dig?",
-            options: [{
-                    text: "Alltid",
-                    value: "time",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "time",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "time",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "time",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "time",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta planerar ni tillsammans för veckan?",
-            options: [{
-                    text: "Varje vecka",
-                    value: "service",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "service",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "service",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "service",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "service",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur viktigt är fysisk närhet för dig i relationen?",
-            options: [{
-                    text: "Mycket viktig",
-                    value: "touch",
-                    weight: 5
-                }, {
-                    text: "Viktig",
-                    value: "touch",
-                    weight: 4
-                }, {
-                    text: "Neutral",
-                    value: "touch",
-                    weight: 3
-                }, {
-                    text: "Mindre viktig",
-                    value: "touch",
-                    weight: 2
-                }, {
-                    text: "Inte viktig",
-                    value: "touch",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta följer ni upp veckan tillsammans?",
-            options: [{
-                    text: "Varje vecka",
-                    value: "service",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "service",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "service",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "service",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "service",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta visar du uppskattning för din partner?",
-            options: [{
-                    text: "Alltid",
-                    value: "words",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "words",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "words",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "words",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "words",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta har ni tid för varandra utan distraktioner?",
-            options: [{
-                    text: "Varje dag",
-                    value: "time",
-                    weight: 5
-                }, {
-                    text: "Flera gånger i veckan",
-                    value: "time",
-                    weight: 4
-                }, {
-                    text: "En gång i veckan",
-                    value: "time",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "time",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "time",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta diskuterar ni era gemensamma mål?",
-            options: [{
-                    text: "Alltid",
-                    value: "words",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "words",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "words",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "words",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "words",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur viktigt är det för dig att planera saker tillsammans?",
-            options: [{
-                    text: "Mycket viktigt",
-                    value: "service",
-                    weight: 5
-                }, {
-                    text: "Viktigt",
-                    value: "service",
-                    weight: 4
-                }, {
-                    text: "Neutral",
-                    value: "service",
-                    weight: 3
-                }, {
-                    text: "Mindre viktigt",
-                    value: "service",
-                    weight: 2
-                }, {
-                    text: "Inte viktigt",
-                    value: "service",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta deltar ni i aktiviteter som stärker er relation?",
-            options: [{
-                    text: "Alltid",
-                    value: "time",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "time",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "time",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "time",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "time",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta visar ni uppskattning för varandras arbete i vardagen?",
-            options: [{
-                    text: "Alltid",
-                    value: "words",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "words",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "words",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "words",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "words",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur viktigt är det för dig att dela framtida drömmar med din partner?",
-            options: [{
-                    text: "Mycket viktigt",
-                    value: "words",
-                    weight: 5
-                }, {
-                    text: "Viktigt",
-                    value: "words",
-                    weight: 4
-                }, {
-                    text: "Neutral",
-                    value: "words",
-                    weight: 3
-                }, {
-                    text: "Mindre viktigt",
-                    value: "words",
-                    weight: 2
-                }, {
-                    text: "Inte viktigt",
-                    value: "words",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta skrattar ni tillsammans?",
-            options: [{
-                    text: "Dagligen",
-                    value: "time",
-                    weight: 5
-                }, {
-                    text: "Flera gånger i veckan",
-                    value: "time",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "time",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "time",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "time",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta visar ni ömhet offentligt?",
-            options: [{
-                    text: "Alltid",
-                    value: "touch",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "touch",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "touch",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "touch",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "touch",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur mycket anstränger ni er för att lösa konflikter på ett konstruktivt sätt?",
-            options: [{
-                    text: "Alltid",
-                    value: "words",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "words",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "words",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "words",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "words",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur viktigt är det för dig att känna att din partner stöttar dig känslomässigt?",
-            options: [{
-                    text: "Mycket viktigt",
-                    value: "words",
-                    weight: 5
-                }, {
-                    text: "Viktigt",
-                    value: "words",
-                    weight: 4
-                }, {
-                    text: "Neutral",
-                    value: "words",
-                    weight: 3
-                }, {
-                    text: "Mindre viktigt",
-                    value: "words",
-                    weight: 2
-                }, {
-                    text: "Inte viktigt",
-                    value: "words",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta diskuterar ni era olika behov och förväntningar?",
-            options: [{
-                    text: "Alltid",
-                    value: "words",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "words",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "words",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "words",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "words",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta tar ni tid för att fira varandras framgångar?",
-            options: [{
-                    text: "Alltid",
-                    value: "words",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "words",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "words",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "words",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "words",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta diskuterar ni hur ni kan förbättra er relation?",
-            options: [{
-                    text: "Alltid",
-                    value: "words",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "words",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "words",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "words",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "words",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta är du nöjd med kvaliteten på tid ni spenderar tillsammans?",
-            options: [{
-                    text: "Alltid",
-                    value: "time",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "time",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "time",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "time",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "time",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta tycker du att din partner uppskattar dina handlingar?",
-            options: [{
-                    text: "Alltid",
-                    value: "service",
-                    weight: 5
-                }, {
-                    text: "Ofta",
-                    value: "service",
-                    weight: 4
-                }, {
-                    text: "Ibland",
-                    value: "service",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "service",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "service",
-                    weight: 1
-                }
-            ]
-        }, {
-            question: "Hur ofta upplever du fysisk närhet från din partner?",
-            options: [{
-                    text: "Dagligen",
-                    value: "touch",
-                    weight: 5
-                }, {
-                    text: "Flera gånger i veckan",
-                    value: "touch",
-                    weight: 4
-                }, {
-                    text: "En gång i veckan",
-                    value: "touch",
-                    weight: 3
-                }, {
-                    text: "Sällan",
-                    value: "touch",
-                    weight: 2
-                }, {
-                    text: "Aldrig",
-                    value: "touch",
-                    weight: 1
-                }
-            ]
-        }
-    ];
 
 let currentQuestionIndex = 0;
 const scores = {
@@ -1039,11 +489,104 @@ window.addEventListener('click', function (e) {
     }
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+    const testSelectionDiv = document.getElementById("test-selection");
+    const introText = document.getElementById("intro-text");
+    const questionsContainer = document.getElementById("questions-container");
+    const quizNav = document.getElementById("quiz-nav");
+
+    const questionFiles = [
+        "words_questions.js",
+        "time_questions.js",
+        "gifts_questions.js",
+        "service_questions.js",
+        "touch_questions.js",
+        "all_languages_questions.js"
+    ];
+
+    let allQuestions = [];
+    let testType = ""; // "short" or "long"
+    const SHORT_TEST_QUESTIONS = 30;
+    const QUESTIONS_PER_CATEGORY = 5; // Used for short test
+
+    async function loadQuestions() {
+		try {
+			let questionSets = await Promise.all(
+				questionFiles.map(async file => {
+					let response = await fetch(file);
+					if (!response.ok) throw new Error(`Fel vid laddning av: ${file}`);
+					return response.json();
+				})
+			);
+
+			console.log("Frågor laddade:", questionSets); // ✅ Add this for debugging
+
+			let [wordsQuestions, timeQuestions, giftsQuestions, serviceQuestions, touchQuestions, allLanguagesQuestions] = questionSets;
+
+			function getRandomQuestions(arr, num) {
+				return arr.sort(() => Math.random() - 0.5).slice(0, num);
+			}
+
+			if (testType === "short") {
+				allQuestions = [
+					...getRandomQuestions(wordsQuestions, 5),
+					...getRandomQuestions(timeQuestions, 5),
+					...getRandomQuestions(giftsQuestions, 5),
+					...getRandomQuestions(serviceQuestions, 5),
+					...getRandomQuestions(touchQuestions, 5),
+					...getRandomQuestions(allLanguagesQuestions, 30 - 25)
+				];
+			} else {
+				allQuestions = [
+					...wordsQuestions,
+					...timeQuestions,
+					...giftsQuestions,
+					...serviceQuestions,
+					...touchQuestions,
+					...allLanguagesQuestions
+				];
+			}
+
+			allQuestions.sort(() => Math.random() - 0.5);
+			console.log("Valda frågor:", allQuestions); // ✅ Debug output
+			startQuiz();
+		} catch (error) {
+			console.error("Error loading question files:", error);
+		}
+	}
+
+    function startQuiz() {
+        testSelectionDiv.style.display = "none";
+        introText.classList.add("hidden");
+        questionsContainer.classList.add("active");
+        quizNav.classList.add("active");
+
+        currentQuestionIndex = 0;
+        renderQuestion(currentQuestionIndex);
+    }
+
+    document.getElementById("short-test").addEventListener("click", () => {
+		testType = "short";
+		loadQuestions();
+	});
+
+	document.getElementById("long-test").addEventListener("click", () => {
+		testType = "long";
+		loadQuestions();
+	});
+});
+
+
+
 function renderQuestion(index = 0) {
-    const questionData = questionsData[index];
+	if (!allQuestions.length) {
+        console.error("Frågor är inte laddade än!");
+        return;
+    }
+    const questionData = allQuestions[index];
     questionsContainer.innerHTML = `
 	        <div class="quest-item active">
-	            <p class="indicator">Fråga ${index + 1} / ${questionsData.length}</p>
+	            <p class="indicator">Fråga ${index + 1} / ${allQuestions.length}</p>
 	            <p class="question-text">${questionData.question}</p>
 	            <div class="radio-items">
 	                ${questionData.options.map((option, i) => `
@@ -1164,21 +707,10 @@ function showResults() {
 	};
 }
 
-startButton.addEventListener('click', () => {
-    introText.classList.add('hidden'); // Hide introduction
-    questionsInstructions.classList.add('active'); // Show instructions
-    questionsContainer.classList.add('active'); // Show questions
-    quizNav.classList.add('active'); // Show navigation buttons
-    currentQuestionIndex = 0; // Ensure we start at the first question
-    renderQuestion(currentQuestionIndex); // Render the first question
-    prevButton.disabled = true; // Disable the "Previous Question" button initially
-	progressContainer.classList.add('active'); //Show progressbar
-    updateProgressBar(); // Ensure progress starts at 1st question
-});
 
 function updateProgressBar() {
     const progressBar = document.getElementById('progress-bar');
-    const progress = ((currentQuestionIndex + 1) / questionsData.length) * 100;
+    const progress = ((currentQuestionIndex + 1) / allQuestions.length) * 100;
     progressBar.style.width = `${progress}%`;
 }
 
@@ -1197,14 +729,14 @@ nextButton.addEventListener('click', () => {
         weight
     };
 
-    if (currentQuestionIndex < questionsData.length-1) {
+    if (currentQuestionIndex < allQuestions.length-1) {
         currentQuestionIndex++;
         renderQuestion(currentQuestionIndex);
         prevButton.disabled = false;
 		if (currentQuestionIndex === 0) {
             prevButton.disabled = true;
         }
-        if (currentQuestionIndex === questionsData.length-1) {
+        if (currentQuestionIndex === allQuestions.length-1) {
             nextButton.textContent = 'Visa resultat';
         }
     } else {
@@ -1228,7 +760,8 @@ prevButton.addEventListener('click', () => {
 });
 	    
 restartButton.addEventListener('click', () => {
-    Object.keys(userAnswers).forEach(key => delete userAnswers[key]); // Rensa svar
+    Object.keys(userAnswers).forEach(key => delete userAnswers[key]); // Rensa tidigare svar
+    Object.keys(scores).forEach(key => scores[key] = 0); // Nollställ poängen
 
     currentQuestionIndex = 0; // Återställ index
     resultsDiv.classList.remove('active'); // Dölj resultatet
@@ -1236,7 +769,7 @@ restartButton.addEventListener('click', () => {
     questionsContainer.classList.add('active'); // Visa frågor igen
     questionsInstructions.classList.add('active'); // Visa instruktioner
     progressContainer.classList.add('active'); // Visa progressbar
-    
+
     renderQuestion(currentQuestionIndex); // Återställ frågevisningen
     updateProgressBar(); // Återställ progress
     prevButton.disabled = true; // Se till att "Föregående" är inaktiverad i början
