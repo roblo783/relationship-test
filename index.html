@@ -125,6 +125,9 @@
             color: white;
             border-radius: 5px;
         }
+		.light {
+            background-color: #007e8f99;
+        }
         .btn:hover {
             background-color: #005f6b;
         }
@@ -313,7 +316,7 @@
 	 <div id="test-selection">
 		<h2>Påbörja testet</h2>
 		<button class="btn" id="long-test">Fullständigt test (62 frågor) »</button>
-		<button class="btn" id="short-test">Snabbtest (30 frågor) »</button>
+		<button class="btn light" id="short-test">Snabbtest (30 frågor) »</button>
 	</div>
      <div class="modal-overlay" id="modal-overlay">
 		 <div class="modal">
@@ -496,64 +499,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const quizNav = document.getElementById("quiz-nav");
 
     const questionFiles = [
-		"questions/words_questions.js",
-		"questions/time_questions.js",
-		"questions/gifts_questions.js",
-		"questions/service_questions.js",
-		"questions/touch_questions.js",
-		"questions/all_languages_questions.js"
-	];
+    "questions/words_questions.js",
+    "questions/time_questions.js",
+    "questions/gifts_questions.js",
+    "questions/service_questions.js",
+    "questions/touch_questions.js",
+    "questions/all_languages_questions.js"
+];
 
-    let allQuestions = [];
-    let testType = ""; // "short" or "long"
-    const SHORT_TEST_QUESTIONS = 30;
-    const QUESTIONS_PER_CATEGORY = 5; // Used for short test
+let allQuestions = [];
 
-    async function loadQuestions() {
-		try {
-			let questionSets = await Promise.all(
-				questionFiles.map(async file => {
-					let response = await fetch(file);
-					if (!response.ok) throw new Error(`Fel vid laddning av: ${file}`);
-					return response.json();
-				})
-			);
+function loadQuestions() {
+    let loadedScripts = 0;
 
-			console.log("Frågor laddade:", questionSets); // ✅ Add this for debugging
+    questionFiles.forEach((file, index) => {
+        const script = document.createElement("script");
+        script.src = file;
+        script.type = "module"; // If you use "export const", keep this line. If not, remove it.
 
-			let [wordsQuestions, timeQuestions, giftsQuestions, serviceQuestions, touchQuestions, allLanguagesQuestions] = questionSets;
+        script.onload = () => {
+            loadedScripts++;
+            if (loadedScripts === questionFiles.length) {
+                startQuiz();
+            }
+        };
 
-			function getRandomQuestions(arr, num) {
-				return arr.sort(() => Math.random() - 0.5).slice(0, num);
-			}
+        script.onerror = () => {
+            console.error(`Error loading: ${file}`);
+        };
 
-			if (testType === "short") {
-				allQuestions = [
-					...getRandomQuestions(wordsQuestions, 5),
-					...getRandomQuestions(timeQuestions, 5),
-					...getRandomQuestions(giftsQuestions, 5),
-					...getRandomQuestions(serviceQuestions, 5),
-					...getRandomQuestions(touchQuestions, 5),
-					...getRandomQuestions(allLanguagesQuestions, 30 - 25)
-				];
-			} else {
-				allQuestions = [
-					...wordsQuestions,
-					...timeQuestions,
-					...giftsQuestions,
-					...serviceQuestions,
-					...touchQuestions,
-					...allLanguagesQuestions
-				];
-			}
-
-			allQuestions.sort(() => Math.random() - 0.5);
-			console.log("Valda frågor:", allQuestions); // ✅ Debug output
-			startQuiz();
-		} catch (error) {
-			console.error("Error loading question files:", error);
-		}
-	}
+        document.body.appendChild(script);
+    });
+}
 
     function startQuiz() {
         testSelectionDiv.style.display = "none";
